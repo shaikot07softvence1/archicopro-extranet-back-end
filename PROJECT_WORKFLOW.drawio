@@ -1,0 +1,254 @@
+<mxfile host="app.diagrams.net" modified="2026-06-13T00:00:00.000Z" agent="Codex" version="24.7.17" type="device">
+  <diagram id="archicopro-total-workflow" name="Total Project Workflow">
+    <mxGraphModel dx="2074" dy="1374" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2200" pageHeight="1700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="ARCHICOPRO Extranet - Total Application Workflow" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=28;fontStyle=1;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="40" y="30" width="760" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="Derived from React routes, protected layout, permission utilities, RTK Query API slices, page workflows, SQL schema, and Prisma schema." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontColor=#475569;" vertex="1" parent="1">
+          <mxGeometry x="42" y="72" width="920" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend" value="Legend&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;Blue = frontend route/view&lt;br&gt;Green = API/backend service&lt;br&gt;Amber = permission or decision&lt;br&gt;Slate = database/storage&lt;br&gt;Dashed = conditional or permission-gated path&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#cbd5e1;fontColor=#334155;align=left;spacing=10;" vertex="1" parent="1">
+          <mxGeometry x="1660" y="30" width="430" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="visitor" value="Visitor / Unauthenticated User" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef2ff;strokeColor=#6366f1;fontColor=#1e1b4b;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="160" width="210" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="member" value="Authenticated Member" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef2ff;strokeColor=#6366f1;fontColor=#1e1b4b;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="310" width="210" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="moderator" value="Moderator" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef2ff;strokeColor=#6366f1;fontColor=#1e1b4b;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="450" width="210" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="admin" value="Superuser / Admin" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef2ff;strokeColor=#6366f1;fontColor=#1e1b4b;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="590" width="210" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="router" value="React Router&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;src/routes/index.tsx&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dbeafe;strokeColor=#2563eb;fontColor=#1e3a8a;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="350" y="160" width="220" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="publicRoute" value="PublicRoute&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;/login, /signup, /forgot-password&lt;br&gt;Redirects logged-in users to /&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dbeafe;strokeColor=#2563eb;fontColor=#1e3a8a;" vertex="1" parent="1">
+          <mxGeometry x="660" y="135" width="270" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="protectedRoute" value="ProtectedRoute&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;Requires Redux auth.isAuthenticated&lt;br&gt;Otherwise redirects to /login&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fef3c7;strokeColor=#d97706;fontColor=#78350f;" vertex="1" parent="1">
+          <mxGeometry x="660" y="290" width="270" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="loginFlow" value="Login Flow&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;POST /auth/login&lt;br&gt;GET /user/users/me&lt;br&gt;store token, refreshToken, user in localStorage&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dcfce7;strokeColor=#16a34a;fontColor=#14532d;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="110" width="300" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="signupOtpFlow" value="Signup + OTP Flow&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;POST /auth/send_otp&lt;br&gt;/verify-otp&lt;br&gt;POST /auth/signup with otp_value&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dcfce7;strokeColor=#16a34a;fontColor=#14532d;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="230" width="300" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="forgotFlow" value="Forgot Password Flow&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;POST /auth/send_otp&lt;br&gt;POST /auth/verify_otp&lt;br&gt;POST /auth/forgot_password&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dcfce7;strokeColor=#16a34a;fontColor=#14532d;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="350" width="300" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="apiSlice" value="RTK Query API Slice&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;Base URL: VITE_API_BASE_URL&lt;br&gt;Adds Bearer token&lt;br&gt;401 triggers POST /auth/refresh, then retries&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dcfce7;strokeColor=#16a34a;fontColor=#14532d;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1450" y="170" width="310" height="125" as="geometry" />
+        </mxCell>
+        <mxCell id="backendAuth" value="Backend Auth Service&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;login, signup, OTP, reset password, refresh token&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dcfce7;strokeColor=#16a34a;fontColor=#14532d;" vertex="1" parent="1">
+          <mxGeometry x="1850" y="175" width="240" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="authDb" value="Auth DB&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;users&lt;br&gt;refresh_tokens&lt;br&gt;otp_sessions&lt;br&gt;roles + permissions&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e2e8f0;strokeColor=#64748b;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="1850" y="290" width="240" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="dashboardLayout" value="DashboardLayout Shell&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;Protected wrapper for /&lt;br&gt;Loads current user, online users, forums, global search&lt;br&gt;Builds sidebar from permissions&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dbeafe;strokeColor=#2563eb;fontColor=#1e3a8a;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="350" y="420" width="300" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="permissionMerge" value="Permission Resolution&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;role permissions + user overrides&lt;br&gt;features: article, document, event, forum, training, user&lt;br&gt;actions: view, create, edit, delete&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fef3c7;strokeColor=#d97706;fontColor=#78350f;" vertex="1" parent="1">
+          <mxGeometry x="735" y="430" width="300" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="permissionRoute" value="PermissionRoute&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;Gates module routes&lt;br&gt;Admin routes require superuser&lt;br&gt;Moderation requires superuser or moderator&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fef3c7;strokeColor=#d97706;fontColor=#78350f;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1120" y="430" width="300" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="globalSearch" value="Global Search&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;GET /home/?q=&amp;limit=&lt;br&gt;Results jump to articles, forum topics, agenda events, trainings&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dbeafe;strokeColor=#2563eb;fontColor=#1e3a8a;" vertex="1" parent="1">
+          <mxGeometry x="1510" y="430" width="300" height="105" as="geometry" />
+        </mxCell>
+
+        <mxCell id="home" value="Home / Member Landing&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;Permission-aware sections&lt;br&gt;forums, pinned topics, published articles, upcoming events, upcoming trainings&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dbeafe;strokeColor=#2563eb;fontColor=#1e3a8a;" vertex="1" parent="1">
+          <mxGeometry x="50" y="750" width="310" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="profile" value="Profile + Preferences&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;View/update own profile&lt;br&gt;Upload avatar&lt;br&gt;Reset password&lt;br&gt;Notification preferences&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dbeafe;strokeColor=#2563eb;fontColor=#1e3a8a;" vertex="1" parent="1">
+          <mxGeometry x="400" y="750" width="310" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="articles" value="Articles Workflow&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;List published/drafts&lt;br&gt;Create/edit rich article with thumbnail/files&lt;br&gt;Categories&lt;br&gt;Publish/delete&lt;br&gt;Role-based article permissions&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dbeafe;strokeColor=#2563eb;fontColor=#1e3a8a;" vertex="1" parent="1">
+          <mxGeometry x="750" y="750" width="310" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="forums" value="Forums Workflow&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;Forum list + dynamic sidebar&lt;br&gt;Create/update/delete forums&lt;br&gt;Topics with attachments&lt;br&gt;Replies/posts&lt;br&gt;Pin topics&lt;br&gt;Forum permissions&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dbeafe;strokeColor=#2563eb;fontColor=#1e3a8a;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="750" width="310" height="145" as="geometry" />
+        </mxCell>
+        <mxCell id="eventsAgenda" value="Agenda / Events Workflow&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;Calendar by month/year&lt;br&gt;Upcoming list&lt;br&gt;Create/update/delete event&lt;br&gt;Attachments + rich description&lt;br&gt;Register/unregister&lt;br&gt;View registrations&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dbeafe;strokeColor=#2563eb;fontColor=#1e3a8a;" vertex="1" parent="1">
+          <mxGeometry x="1450" y="750" width="310" height="145" as="geometry" />
+        </mxCell>
+        <mxCell id="trainings" value="Trainings Workflow&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;List/details&lt;br&gt;Create/update/delete training&lt;br&gt;Thumbnail + attachments&lt;br&gt;Register/unregister&lt;br&gt;Training role permissions&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dbeafe;strokeColor=#2563eb;fontColor=#1e3a8a;" vertex="1" parent="1">
+          <mxGeometry x="50" y="970" width="310" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="documents" value="Document Library Workflow&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;Folder tree + breadcrumbs&lt;br&gt;Create/rename/delete folders&lt;br&gt;Upload/rename/delete files&lt;br&gt;Preview/download&lt;br&gt;Folder permissions: read/upload&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dbeafe;strokeColor=#2563eb;fontColor=#1e3a8a;" vertex="1" parent="1">
+          <mxGeometry x="400" y="970" width="310" height="145" as="geometry" />
+        </mxCell>
+        <mxCell id="moderationFlow" value="Moderation Workflow&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;Queue of pending/flagged posts&lt;br&gt;Approve/reject&lt;br&gt;Moderation logs&lt;br&gt;Available to moderator or superuser&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fef3c7;strokeColor=#d97706;fontColor=#78350f;" vertex="1" parent="1">
+          <mxGeometry x="750" y="970" width="310" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="adminPanel" value="Admin Panel Workflow&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;Superuser area&lt;br&gt;Members, forums, articles, events, trainings&lt;br&gt;Roles and permissions&lt;br&gt;Moderation&lt;br&gt;SMTP, logs, backups&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fef3c7;strokeColor=#d97706;fontColor=#78350f;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="970" width="310" height="145" as="geometry" />
+        </mxCell>
+
+        <mxCell id="contentApi" value="Content API Layer&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;articles, forums, events, trainings, documents&lt;br&gt;CRUD + permissions + registrations + uploads/downloads&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dcfce7;strokeColor=#16a34a;fontColor=#14532d;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1510" y="1010" width="300" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="adminApi" value="Admin API Layer&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;users, roles, permissions&lt;br&gt;activity logs&lt;br&gt;SMTP settings&lt;br&gt;system logs&lt;br&gt;backups&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dcfce7;strokeColor=#16a34a;fontColor=#14532d;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1510" y="1190" width="300" height="135" as="geometry" />
+        </mxCell>
+
+        <mxCell id="dbContent" value="Content Database&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;articles, article_categories, article_permissions&lt;br&gt;forums, topics, posts, moderation_logs&lt;br&gt;events, event_registrations&lt;br&gt;trainings, training_registrations, training_permissions&lt;br&gt;document_folders, documents, folder_permissions&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e2e8f0;strokeColor=#64748b;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="1850" y="950" width="300" height="175" as="geometry" />
+        </mxCell>
+        <mxCell id="dbAdmin" value="Admin / Settings Database&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;users, user_roles&lt;br&gt;role_permissions, user_permissions&lt;br&gt;notification_preferences&lt;br&gt;activity_logs&lt;br&gt;admin_smtp_settings&lt;br&gt;backup_configurations, backup_runs&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e2e8f0;strokeColor=#64748b;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="1850" y="1180" width="300" height="175" as="geometry" />
+        </mxCell>
+        <mxCell id="fileStorage" value="File Storage&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;avatars&lt;br&gt;article files/thumbnails&lt;br&gt;forum attachments/thumbnails&lt;br&gt;event/training attachments&lt;br&gt;documents&lt;br&gt;backup archives&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e2e8f0;strokeColor=#64748b;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="1850" y="1400" width="300" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="backendNotes" value="Important rebuild notes&lt;br&gt;&lt;font style=&quot;font-size: 11px;&quot;&gt;1. Preserve current route names first, including admin%26modarator and admin&amp;amp;modarator.&lt;br&gt;2. Return permission arrays on current user profile so sidebar and routes work.&lt;br&gt;3. Blob/download endpoints need Content-Disposition filenames.&lt;br&gt;4. FormData is used heavily for content uploads.&lt;br&gt;5. Some pages use direct user permissions for action buttons, not only route access.&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff7ed;strokeColor=#f97316;fontColor=#7c2d12;align=left;spacing=10;" vertex="1" parent="1">
+          <mxGeometry x="50" y="1300" width="850" height="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e1" value="" style="endArrow=block;html=1;rounded=0;strokeColor=#475569;" edge="1" parent="1" source="visitor" target="router">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" value="" style="endArrow=block;html=1;rounded=0;strokeColor=#475569;" edge="1" parent="1" source="router" target="publicRoute">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" value="login" style="endArrow=block;html=1;rounded=0;strokeColor=#16a34a;fontColor=#14532d;" edge="1" parent="1" source="publicRoute" target="loginFlow">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="signup" style="endArrow=block;html=1;rounded=0;strokeColor=#16a34a;fontColor=#14532d;" edge="1" parent="1" source="publicRoute" target="signupOtpFlow">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" value="forgot password" style="endArrow=block;html=1;rounded=0;strokeColor=#16a34a;fontColor=#14532d;" edge="1" parent="1" source="publicRoute" target="forgotFlow">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" value="" style="endArrow=block;html=1;rounded=0;strokeColor=#16a34a;" edge="1" parent="1" source="loginFlow" target="apiSlice">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" value="" style="endArrow=block;html=1;rounded=0;strokeColor=#16a34a;" edge="1" parent="1" source="signupOtpFlow" target="apiSlice">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" value="" style="endArrow=block;html=1;rounded=0;strokeColor=#16a34a;" edge="1" parent="1" source="forgotFlow" target="apiSlice">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" value="" style="endArrow=block;html=1;rounded=0;strokeColor=#16a34a;" edge="1" parent="1" source="apiSlice" target="backendAuth">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" value="" style="endArrow=block;html=1;rounded=0;strokeColor=#64748b;" edge="1" parent="1" source="backendAuth" target="authDb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" value="token + user" style="endArrow=block;html=1;rounded=0;strokeColor=#2563eb;fontColor=#1e3a8a;" edge="1" parent="1" source="loginFlow" target="protectedRoute">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" value="" style="endArrow=block;html=1;rounded=0;strokeColor=#475569;" edge="1" parent="1" source="member" target="protectedRoute">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" value="" style="endArrow=block;html=1;rounded=0;strokeColor=#475569;" edge="1" parent="1" source="moderator" target="permissionRoute">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" value="" style="endArrow=block;html=1;rounded=0;strokeColor=#475569;" edge="1" parent="1" source="admin" target="permissionRoute">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e15" value="" style="endArrow=block;html=1;rounded=0;strokeColor=#2563eb;" edge="1" parent="1" source="protectedRoute" target="dashboardLayout">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e16" value="" style="endArrow=block;html=1;rounded=0;strokeColor=#d97706;" edge="1" parent="1" source="dashboardLayout" target="permissionMerge">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e17" value="" style="endArrow=block;html=1;rounded=0;strokeColor=#d97706;" edge="1" parent="1" source="permissionMerge" target="permissionRoute">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e18" value="navigation" style="endArrow=block;html=1;rounded=0;strokeColor=#2563eb;fontColor=#1e3a8a;" edge="1" parent="1" source="permissionRoute" target="home">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e19" value="" style="endArrow=block;html=1;rounded=0;strokeColor=#2563eb;" edge="1" parent="1" source="dashboardLayout" target="globalSearch">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e20" value="" style="endArrow=block;html=1;rounded=0;strokeColor=#16a34a;" edge="1" parent="1" source="globalSearch" target="contentApi">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e21" value="" style="endArrow=block;html=1;rounded=0;strokeColor=#2563eb;dashed=1;" edge="1" parent="1" source="permissionRoute" target="profile">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e22" value="article permission" style="endArrow=block;html=1;rounded=0;strokeColor=#2563eb;dashed=1;fontColor=#1e3a8a;" edge="1" parent="1" source="permissionRoute" target="articles">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e23" value="forum permission" style="endArrow=block;html=1;rounded=0;strokeColor=#2563eb;dashed=1;fontColor=#1e3a8a;" edge="1" parent="1" source="permissionRoute" target="forums">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e24" value="event permission" style="endArrow=block;html=1;rounded=0;strokeColor=#2563eb;dashed=1;fontColor=#1e3a8a;" edge="1" parent="1" source="permissionRoute" target="eventsAgenda">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e25" value="training permission" style="endArrow=block;html=1;rounded=0;strokeColor=#2563eb;dashed=1;fontColor=#1e3a8a;" edge="1" parent="1" source="permissionRoute" target="trainings">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e26" value="document permission" style="endArrow=block;html=1;rounded=0;strokeColor=#2563eb;dashed=1;fontColor=#1e3a8a;" edge="1" parent="1" source="permissionRoute" target="documents">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e27" value="moderator or superuser" style="endArrow=block;html=1;rounded=0;strokeColor=#d97706;dashed=1;fontColor=#78350f;" edge="1" parent="1" source="permissionRoute" target="moderationFlow">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e28" value="superuser only" style="endArrow=block;html=1;rounded=0;strokeColor=#d97706;dashed=1;fontColor=#78350f;" edge="1" parent="1" source="permissionRoute" target="adminPanel">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e29" value="" style="endArrow=block;html=1;rounded=0;strokeColor=#16a34a;" edge="1" parent="1" source="home" target="contentApi">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e30" value="" style="endArrow=block;html=1;rounded=0;strokeColor=#16a34a;" edge="1" parent="1" source="profile" target="adminApi">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e31" value="" style="endArrow=block;html=1;rounded=0;strokeColor=#16a34a;" edge="1" parent="1" source="articles" target="contentApi">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e32" value="" style="endArrow=block;html=1;rounded=0;strokeColor=#16a34a;" edge="1" parent="1" source="forums" target="contentApi">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e33" value="" style="endArrow=block;html=1;rounded=0;strokeColor=#16a34a;" edge="1" parent="1" source="eventsAgenda" target="contentApi">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e34" value="" style="endArrow=block;html=1;rounded=0;strokeColor=#16a34a;" edge="1" parent="1" source="trainings" target="contentApi">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e35" value="" style="endArrow=block;html=1;rounded=0;strokeColor=#16a34a;" edge="1" parent="1" source="documents" target="contentApi">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e36" value="" style="endArrow=block;html=1;rounded=0;strokeColor=#16a34a;" edge="1" parent="1" source="moderationFlow" target="contentApi">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e37" value="" style="endArrow=block;html=1;rounded=0;strokeColor=#16a34a;" edge="1" parent="1" source="adminPanel" target="adminApi">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e38" value="content records" style="endArrow=block;html=1;rounded=0;strokeColor=#64748b;fontColor=#334155;" edge="1" parent="1" source="contentApi" target="dbContent">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e39" value="admin records" style="endArrow=block;html=1;rounded=0;strokeColor=#64748b;fontColor=#334155;" edge="1" parent="1" source="adminApi" target="dbAdmin">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e40" value="file URLs + blobs" style="endArrow=block;html=1;rounded=0;strokeColor=#64748b;fontColor=#334155;" edge="1" parent="1" source="contentApi" target="fileStorage">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e41" value="backups/log downloads" style="endArrow=block;html=1;rounded=0;strokeColor=#64748b;fontColor=#334155;" edge="1" parent="1" source="adminApi" target="fileStorage">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e42" value="roles/permissions feed frontend auth" style="endArrow=block;html=1;rounded=0;strokeColor=#64748b;dashed=1;fontColor=#334155;" edge="1" parent="1" source="dbAdmin" target="permissionMerge">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

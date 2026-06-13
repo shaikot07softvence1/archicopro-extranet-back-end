@@ -1,0 +1,644 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserStatus {
+  active
+  pending
+  suspended
+}
+
+enum ArticleStatus {
+  pending
+  draft
+  published
+  archived
+}
+
+enum TrainingFormat {
+  online
+  in_person
+  hybrid
+}
+
+enum TrainingStatus {
+  open
+  full
+  completed
+}
+
+enum ModerationStatus {
+  pending
+  approved
+  rejected
+  flagged
+}
+
+enum OtpPurpose {
+  signup
+  forgot_password
+  login
+}
+
+enum NotificationType {
+  account_approved
+  new_article
+  new_document
+  new_event
+  new_post
+  new_training
+  post_rejected
+  post_reply
+}
+
+model MembershipCategory {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  code      String   @unique
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  users     User[]
+
+  @@map("membership_categories")
+}
+
+model UserRole {
+  id                  String               @id @default(uuid()) @db.Uuid
+  name                String
+  slug                String               @unique
+  description         String?
+  createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  users               User[]
+  rolePermissions     RolePermission[]
+  articlePermissions  ArticlePermission[]
+  trainingPermissions TrainingPermission[]
+  folderPermissions   FolderPermission[]
+  forumPermissions    ForumPermission[]
+
+  @@map("user_roles")
+}
+
+model User {
+  id                    String                   @id @default(uuid()) @db.Uuid
+  email                 String                   @unique
+  passwordHash          String                   @map("password_hash")
+  firstName             String?                  @map("first_name")
+  lastName              String?                  @map("last_name")
+  initials              String?
+  avatarUrl             String?                  @map("avatar_url")
+  phone                 String?
+  mobile                String?
+  address               String?
+  city                  String?
+  society               String?
+  department            String?
+  streetAddress         String?                  @map("street_address")
+  postalCode            String?                  @map("postal_code")
+  country               String?
+  companyName           String?                  @map("company_name")
+  companyRole           String?                  @map("company_role")
+  companyWebsite        String?                  @map("company_website")
+  companySiret          String?                  @map("company_siret")
+  roleId                String?                  @map("role_id") @db.Uuid
+  membershipCategoryId  String?                  @map("membership_category_id") @db.Uuid
+  status                UserStatus               @default(pending)
+  isSuperuser           Boolean                  @default(false) @map("is_superuser")
+  isPaymentValidated    Boolean                  @default(false) @map("is_payment_validated")
+  membershipYear        Int?                     @map("membership_year")
+  memberSince           DateTime?                @map("member_since") @db.Timestamptz(6)
+  isEmailVerified       Boolean                  @default(false) @map("is_email_verified")
+  isOnline              Boolean                  @default(false) @map("is_online")
+  lastSeenAt            DateTime?                @map("last_seen_at") @db.Timestamptz(6)
+  lastLoginAt           DateTime?                @map("last_login_at") @db.Timestamptz(6)
+  isDeleted             Boolean                  @default(false) @map("is_deleted")
+  deletedAt             DateTime?                @map("deleted_at") @db.Timestamptz(6)
+  createdAt             DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt             DateTime                 @updatedAt @map("updated_at") @db.Timestamptz(6)
+  membershipCategory    MembershipCategory?      @relation(fields: [membershipCategoryId], references: [id])
+  role                  UserRole?                @relation(fields: [roleId], references: [id])
+  refreshTokens         RefreshToken[]
+  userPermissions       UserPermission[]
+  articles              Article[]
+  eventsCreated         Event[]
+  eventRegistrations    EventRegistration[]
+  trainingsCreated      Training[]
+  trainingRegistrations TrainingRegistration[]
+  commissionsLed        Commission[]             @relation("CommissionPresident")
+  documentsUploaded     Document[]
+  forumTopics           ForumTopic[]
+  forumPosts            ForumPost[]              @relation("ForumPostAuthor")
+  moderatedPosts        ForumPost[]              @relation("ForumPostModerator")
+  moderationLogs        ModerationLog[]
+  notificationPrefs     NotificationPreference[]
+  activityLogs          ActivityLog[]
+
+  @@index([roleId])
+  @@index([status])
+  @@index([isDeleted])
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(6)
+  revokedAt DateTime? @map("revoked_at") @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("refresh_tokens")
+}
+
+model OtpSession {
+  id         String     @id @default(uuid()) @db.Uuid
+  email      String
+  purpose    OtpPurpose
+  otpHash    String     @map("otp_hash")
+  sessionKey String?    @unique @map("session_key")
+  isVerified Boolean    @default(false) @map("is_verified")
+  expiresAt  DateTime   @map("expires_at") @db.Timestamptz(6)
+  verifiedAt DateTime?  @map("verified_at") @db.Timestamptz(6)
+  createdAt  DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([email, purpose])
+  @@map("otp_sessions")
+}
+
+model RolePermission {
+  id        String   @id @default(uuid()) @db.Uuid
+  roleId    String   @map("role_id") @db.Uuid
+  feature   String
+  canView   Boolean  @default(false) @map("can_view")
+  canCreate Boolean  @default(false) @map("can_create")
+  canEdit   Boolean  @default(false) @map("can_edit")
+  canDelete Boolean  @default(false) @map("can_delete")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  role      UserRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, feature])
+  @@map("role_permissions")
+}
+
+model UserPermission {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  feature   String
+  canView   Boolean  @default(false) @map("can_view")
+  canCreate Boolean  @default(false) @map("can_create")
+  canEdit   Boolean  @default(false) @map("can_edit")
+  canDelete Boolean  @default(false) @map("can_delete")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, feature])
+  @@map("user_permissions")
+}
+
+model ArticleCategory {
+  id        String    @id @default(uuid()) @db.Uuid
+  name      String    @unique
+  colorCode String?   @map("color_code")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  articles  Article[]
+
+  @@map("article_categories")
+}
+
+model Article {
+  id               String              @id @default(uuid()) @db.Uuid
+  title            String
+  excerpt          String              @default("")
+  body             String
+  categoryId       String              @map("category_id") @db.Uuid
+  status           ArticleStatus       @default(draft)
+  thumbnailUrl     String?             @map("thumbnail_url")
+  pdfUrl           String?             @map("pdf_url")
+  authorId         String              @map("author_id") @db.Uuid
+  structuredFields Json                @default("{}") @map("structured_fields")
+  publishedAt      DateTime?           @map("published_at") @db.Timestamptz(6)
+  createdAt        DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+  author           User                @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  category         ArticleCategory     @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  files            ArticleFile[]
+  permissions      ArticlePermission[]
+
+  @@index([authorId])
+  @@index([categoryId])
+  @@index([status])
+  @@map("articles")
+}
+
+model ArticleFile {
+  id           String   @id @default(uuid()) @db.Uuid
+  articleId    String   @map("article_id") @db.Uuid
+  fileUrl      String   @map("file_url")
+  originalName String?  @map("original_name")
+  mimeType     String?  @map("mime_type")
+  fileSize     BigInt?  @map("file_size")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  article      Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@unique([articleId, fileUrl])
+  @@map("article_files")
+}
+
+model ArticlePermission {
+  id        String   @id @default(uuid()) @db.Uuid
+  articleId String   @map("article_id") @db.Uuid
+  roleId    String   @map("role_id") @db.Uuid
+  canRead   Boolean  @default(true) @map("can_read")
+  canWrite  Boolean  @default(false) @map("can_write")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  role      UserRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([articleId, roleId])
+  @@map("article_permissions")
+}
+
+model Event {
+  id            String              @id @default(uuid()) @db.Uuid
+  title         String
+  eventType     String              @map("event_type")
+  eventDate     DateTime            @map("event_date") @db.Date
+  endDate       DateTime?           @map("end_date") @db.Date
+  eventTime     DateTime?           @map("event_time") @db.Time(6)
+  location      String
+  description   String              @default("")
+  maxAttendees  Int                 @default(0) @map("max_attendees")
+  isPublic      Boolean             @default(false) @map("is_public")
+  status        String?
+  createdById   String              @map("created_by_id") @db.Uuid
+  createdAt     DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdBy     User                @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  attachments   EventAttachment[]
+  registrations EventRegistration[]
+
+  @@index([eventDate])
+  @@map("events")
+}
+
+model EventAttachment {
+  id           String   @id @default(uuid()) @db.Uuid
+  eventId      String   @map("event_id") @db.Uuid
+  fileUrl      String   @map("file_url")
+  originalName String?  @map("original_name")
+  mimeType     String?  @map("mime_type")
+  fileSize     BigInt?  @map("file_size")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  event        Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, fileUrl])
+  @@map("event_attachments")
+}
+
+model EventRegistration {
+  id           String   @id @default(uuid()) @db.Uuid
+  eventId      String   @map("event_id") @db.Uuid
+  userId       String   @map("user_id") @db.Uuid
+  registeredAt DateTime @default(now()) @map("registered_at") @db.Timestamptz(6)
+  event        Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  @@index([eventId])
+  @@index([userId])
+  @@map("event_registrations")
+}
+
+model Training {
+  id             String                 @id @default(uuid()) @db.Uuid
+  title          String
+  description    String                 @default("")
+  instructorName String?                @map("instructor_name")
+  format         TrainingFormat
+  trainingDate   DateTime               @map("training_date") @db.Date
+  endDate        DateTime?              @map("end_date") @db.Date
+  durationHours  Decimal                @default(0) @map("duration_hours") @db.Decimal(6, 2)
+  thumbnailUrl   String?                @map("thumbnail_url")
+  maxAttendees   Int                    @default(0) @map("max_attendees")
+  status         TrainingStatus         @default(open)
+  createdById    String                 @map("created_by_id") @db.Uuid
+  createdAt      DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdBy      User                   @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  attachments    TrainingAttachment[]
+  registrations  TrainingRegistration[]
+  permissions    TrainingPermission[]
+
+  @@index([trainingDate])
+  @@map("trainings")
+}
+
+model TrainingAttachment {
+  id           String   @id @default(uuid()) @db.Uuid
+  trainingId   String   @map("training_id") @db.Uuid
+  fileUrl      String   @map("file_url")
+  originalName String?  @map("original_name")
+  mimeType     String?  @map("mime_type")
+  fileSize     BigInt?  @map("file_size")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  training     Training @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+
+  @@unique([trainingId, fileUrl])
+  @@map("training_attachments")
+}
+
+model TrainingRegistration {
+  id           String   @id @default(uuid()) @db.Uuid
+  trainingId   String   @map("training_id") @db.Uuid
+  userId       String   @map("user_id") @db.Uuid
+  registeredAt DateTime @default(now()) @map("registered_at") @db.Timestamptz(6)
+  training     Training @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([trainingId, userId])
+  @@index([trainingId])
+  @@index([userId])
+  @@map("training_registrations")
+}
+
+model TrainingPermission {
+  id         String   @id @default(uuid()) @db.Uuid
+  trainingId String   @map("training_id") @db.Uuid
+  roleId     String   @map("role_id") @db.Uuid
+  canRead    Boolean  @default(true) @map("can_read")
+  canWrite   Boolean  @default(false) @map("can_write")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  training   Training @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+  role       UserRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([trainingId, roleId])
+  @@map("training_permissions")
+}
+
+model Commission {
+  id          String           @id @default(uuid()) @db.Uuid
+  name        String           @unique
+  description String?
+  presidentId String?          @map("president_id") @db.Uuid
+  createdAt   DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  president   User?            @relation("CommissionPresident", fields: [presidentId], references: [id], onDelete: SetNull)
+  folders     DocumentFolder[]
+  forums      Forum[]
+
+  @@map("commissions")
+}
+
+model DocumentFolder {
+  id           String             @id @default(uuid()) @db.Uuid
+  name         String
+  colorCode    String             @default("#CBD5E1") @map("color_code")
+  commissionId String?            @map("commission_id") @db.Uuid
+  parentId     String?            @map("parent_id") @db.Uuid
+  createdAt    DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  commission   Commission?        @relation(fields: [commissionId], references: [id], onDelete: SetNull)
+  parent       DocumentFolder?    @relation("FolderHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children     DocumentFolder[]   @relation("FolderHierarchy")
+  permissions  FolderPermission[]
+  documents    Document[]
+
+  @@index([parentId])
+  @@map("document_folders")
+}
+
+model FolderPermission {
+  id        String         @id @default(uuid()) @db.Uuid
+  folderId  String         @map("folder_id") @db.Uuid
+  roleId    String         @map("role_id") @db.Uuid
+  canRead   Boolean        @default(true) @map("can_read")
+  canUpload Boolean        @default(false) @map("can_upload")
+  createdAt DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
+  folder    DocumentFolder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  role      UserRole       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([folderId, roleId])
+  @@map("folder_permissions")
+}
+
+model Document {
+  id           String         @id @default(uuid()) @db.Uuid
+  originalName String         @map("original_name")
+  storedName   String?        @map("stored_name")
+  fileUrl      String?        @map("file_url")
+  fileType     String         @map("file_type")
+  mimeType     String         @map("mime_type")
+  fileSize     BigInt         @default(0) @map("file_size")
+  folderId     String         @map("folder_id") @db.Uuid
+  uploadedById String         @map("uploaded_by_id") @db.Uuid
+  createdAt    DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
+  folder       DocumentFolder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  uploadedBy   User           @relation(fields: [uploadedById], references: [id], onDelete: Restrict)
+
+  @@index([folderId])
+  @@map("documents")
+}
+
+model Forum {
+  id                      String                   @id @default(uuid()) @db.Uuid
+  slug                    String                   @unique
+  name                    String
+  description             String?
+  forumType               String                   @default("general") @map("forum_type")
+  authorName              String?                  @map("author_name")
+  thumbnailUrl            String?                  @map("thumbnail_url")
+  isActive                Boolean                  @default(true) @map("is_active")
+  commissionId            String?                  @map("commission_id") @db.Uuid
+  createdAt               DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt               DateTime                 @updatedAt @map("updated_at") @db.Timestamptz(6)
+  commission              Commission?              @relation(fields: [commissionId], references: [id], onDelete: SetNull)
+  permissions             ForumPermission[]
+  topics                  ForumTopic[]
+  notificationPreferences NotificationPreference[]
+
+  @@map("forums")
+}
+
+model ForumPermission {
+  id        String   @id @default(uuid()) @db.Uuid
+  forumId   String   @map("forum_id") @db.Uuid
+  roleId    String   @map("role_id") @db.Uuid
+  canRead   Boolean  @default(true) @map("can_read")
+  canPost   Boolean  @default(false) @map("can_post")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  forum     Forum    @relation(fields: [forumId], references: [id], onDelete: Cascade)
+  role      UserRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([forumId, roleId])
+  @@map("forum_permissions")
+}
+
+model ForumTopic {
+  id             String                 @id @default(uuid()) @db.Uuid
+  forumId        String                 @map("forum_id") @db.Uuid
+  title          String
+  content        String
+  authorId       String                 @map("author_id") @db.Uuid
+  isPinned       Boolean                @default(false) @map("is_pinned")
+  isLocked       Boolean                @default(false) @map("is_locked")
+  viewCount      Int                    @default(0) @map("view_count")
+  replyCount     Int                    @default(0) @map("reply_count")
+  lastActivityAt DateTime               @default(now()) @map("last_activity_at") @db.Timestamptz(6)
+  createdAt      DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
+  forum          Forum                  @relation(fields: [forumId], references: [id], onDelete: Cascade)
+  author         User                   @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  attachments    ForumTopicAttachment[]
+  posts          ForumPost[]
+
+  @@index([forumId])
+  @@index([lastActivityAt])
+  @@map("forum_topics")
+}
+
+model ForumTopicAttachment {
+  id           String     @id @default(uuid()) @db.Uuid
+  topicId      String     @map("topic_id") @db.Uuid
+  fileUrl      String     @map("file_url")
+  originalName String?    @map("original_name")
+  mimeType     String?    @map("mime_type")
+  fileSize     BigInt?    @map("file_size")
+  createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  topic        ForumTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@unique([topicId, fileUrl])
+  @@map("forum_topic_attachments")
+}
+
+model ForumPost {
+  id               String                @id @default(uuid()) @db.Uuid
+  topicId          String                @map("topic_id") @db.Uuid
+  authorId         String                @map("author_id") @db.Uuid
+  content          String
+  moderationStatus ModerationStatus      @default(pending) @map("moderation_status")
+  moderatedById    String?               @map("moderated_by_id") @db.Uuid
+  moderatedAt      DateTime?             @map("moderated_at") @db.Timestamptz(6)
+  moderationReason String?               @map("moderation_reason")
+  createdAt        DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime              @updatedAt @map("updated_at") @db.Timestamptz(6)
+  topic            ForumTopic            @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  author           User                  @relation("ForumPostAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+  moderatedBy      User?                 @relation("ForumPostModerator", fields: [moderatedById], references: [id], onDelete: SetNull)
+  attachments      ForumPostAttachment[]
+  moderationLogs   ModerationLog[]
+
+  @@index([topicId])
+  @@index([moderationStatus])
+  @@map("forum_posts")
+}
+
+model ForumPostAttachment {
+  id           String    @id @default(uuid()) @db.Uuid
+  postId       String    @map("post_id") @db.Uuid
+  fileUrl      String    @map("file_url")
+  originalName String?   @map("original_name")
+  mimeType     String?   @map("mime_type")
+  fileSize     BigInt?   @map("file_size")
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  post         ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, fileUrl])
+  @@map("forum_post_attachments")
+}
+
+model ModerationLog {
+  id          String    @id @default(uuid()) @db.Uuid
+  postId      String    @map("post_id") @db.Uuid
+  moderatorId String    @map("moderator_id") @db.Uuid
+  action      String
+  reason      String?
+  actedAt     DateTime  @default(now()) @map("acted_at") @db.Timestamptz(6)
+  post        ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  moderator   User      @relation(fields: [moderatorId], references: [id], onDelete: Restrict)
+
+  @@index([postId])
+  @@map("moderation_logs")
+}
+
+model NotificationPreference {
+  id               String           @id @default(uuid()) @db.Uuid
+  userId           String           @map("user_id") @db.Uuid
+  notificationType NotificationType @map("notification_type")
+  forumId          String?          @map("forum_id") @db.Uuid
+  emailEnabled     Boolean          @default(true) @map("email_enabled")
+  updatedAt        DateTime         @default(now()) @map("updated_at") @db.Timestamptz(6)
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  forum            Forum?           @relation(fields: [forumId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, notificationType, forumId])
+  @@index([userId])
+  @@map("notification_preferences")
+}
+
+model ActivityLog {
+  id          String   @id @default(uuid()) @db.Uuid
+  actorId     String?  @map("actor_id") @db.Uuid
+  actionType  String   @map("action_type")
+  targetType  String   @map("target_type")
+  targetId    String?  @map("target_id") @db.Uuid
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  actor       User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([actorId])
+  @@index([targetType, targetId])
+  @@map("activity_logs")
+}
+
+model AdminSmtpSetting {
+  id                String   @id @default(uuid()) @db.Uuid
+  host              String
+  port              Int
+  username          String
+  passwordEncrypted String   @map("password_encrypted")
+  fromEmail         String   @map("from_email")
+  fromName          String   @map("from_name")
+  useTls            Boolean  @default(true) @map("use_tls")
+  useSsl            Boolean  @default(false) @map("use_ssl")
+  source            String   @default("database")
+  updatedAt         DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("admin_smtp_settings")
+}
+
+model BackupConfiguration {
+  id            String    @id @default(uuid()) @db.Uuid
+  enabled       Boolean   @default(false)
+  frequency     String    @default("daily")
+  executionTime DateTime  @default(dbgenerated("'02:00:00'::time")) @map("execution_time") @db.Time(6)
+  retentionDays Int       @default(30) @map("retention_days")
+  maxBackups    Int       @default(10) @map("max_backups")
+  backupDir     String    @map("backup_dir")
+  lastBackupAt  DateTime? @map("last_backup_at") @db.Timestamptz(6)
+  lastError     String?   @map("last_error")
+  updatedAt     DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("backup_configurations")
+}
+
+model BackupRun {
+  id        String   @id @default(uuid()) @db.Uuid
+  filename  String
+  filePath  String   @map("file_path")
+  sizeBytes BigInt   @default(0) @map("size_bytes")
+  status    String   @default("completed")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("backup_runs")
+}

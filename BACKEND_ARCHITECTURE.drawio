@@ -1,0 +1,196 @@
+<mxfile host="app.diagrams.net" modified="2024-06-13T12:00:00.000Z" agent="Gemini" version="24.0.0" type="device">
+  <diagram id="full-system-arch" name="Full System Design &amp; APIs">
+    <mxGraphModel dx="2000" dy="1500" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Legend / Key -->
+        <mxCell id="legend_bg" value="Legend" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;align=center;verticalAlign=top;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="200" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_module" value="Module Boundary" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;dashed=1;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="30" y="50" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_controller" value="Controller / APIs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="30" y="90" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_service" value="Service / Logic" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="30" y="130" width="180" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Main Backend Boundary -->
+        <mxCell id="backend_boundary" value="ARCHICOPRO Extranet - NestJS Backend API Gateway" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f9f9f9;strokeColor=#333333;strokeWidth=2;verticalAlign=top;fontSize=18;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="240" y="20" width="1150" height="1080" as="geometry" />
+        </mxCell>
+
+        <!-- Guards & Global Middleware -->
+        <mxCell id="global_guards" value="Global Security Layer (NestJS Guards)&#xa;- JwtAuthGuard (Token Validation)&#xa;- RolesGuard (Role Checking)&#xa;- PermissionsGuard (Granular Feature/Action Access)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="260" y="70" width="1110" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================== -->
+        <!-- MODULE 1: Auth & Identity -->
+        <!-- ============================================== -->
+        <mxCell id="mod_auth_boundary" value="Auth &amp; Identity Module" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#b85450;dashed=1;verticalAlign=top;fontStyle=1;fontSize=14;fontColor=#b85450" vertex="1" parent="1">
+          <mxGeometry x="260" y="150" width="350" height="250" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="ctrl_auth" value="AuthController&#xa;&#xa;POST /auth/register&#xa;POST /auth/login (JWT)&#xa;POST /auth/refresh&#xa;POST /auth/forgot-password&#xa;POST /auth/reset-password" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="280" y="190" width="310" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc_auth" value="AuthService&#xa;- Password Hashing (bcrypt)&#xa;- JWT Generation &amp; Verification&#xa;- OTP Management" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="280" y="320" width="310" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge_auth" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="ctrl_auth" target="svc_auth">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================== -->
+        <!-- MODULE 2: User & RBAC -->
+        <!-- ============================================== -->
+        <mxCell id="mod_user_boundary" value="User &amp; RBAC Module" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#6c8ebf;dashed=1;verticalAlign=top;fontStyle=1;fontSize=14;fontColor=#6c8ebf" vertex="1" parent="1">
+          <mxGeometry x="630" y="150" width="370" height="340" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ctrl_user" value="UserController&#xa;&#xa;GET /users/me&#xa;PATCH /users/me/profile&#xa;GET /users (Admin/Pagination)&#xa;GET /users/:id&#xa;PATCH /users/:id/status" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="650" y="190" width="330" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ctrl_rbac" value="RBACController (Admin Only)&#xa;&#xa;GET /roles&#xa;POST /roles&#xa;PATCH /roles/:id/permissions&#xa;POST /users/:id/permissions (Overrides)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="650" y="320" width="330" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc_user" value="UserService &amp; RolesService&#xa;- User CRUD&#xa;- Permission Aggregation Logic" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="650" y="420" width="330" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge_user1" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="ctrl_user" target="svc_user">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_user2" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="ctrl_rbac" target="svc_user">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================== -->
+        <!-- MODULE 3: Content Management -->
+        <!-- ============================================== -->
+        <mxCell id="mod_content_boundary" value="Content Management Module (Articles, Events, Trainings)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#82b366;dashed=1;verticalAlign=top;fontStyle=1;fontSize=14;fontColor=#82b366" vertex="1" parent="1">
+          <mxGeometry x="1020" y="150" width="350" height="340" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ctrl_content" value="ContentController (Dynamic)&#xa;&#xa;GET /articles (Paginated)&#xa;GET /articles/:id&#xa;POST /articles (multipart/form-data)&#xa;PATCH /articles/:id&#xa;DELETE /articles/:id&#xa;&#xa;GET /events &amp; POST /events&#xa;GET /trainings &amp; POST /trainings" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="190" width="310" height="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc_content" value="ContentService&#xa;- Category Management&#xa;- Content Creation/Updates&#xa;- Link to Cloudinary for attachments" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="410" width="310" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge_content" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="ctrl_content" target="svc_content">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================== -->
+        <!-- MODULE 4: Document Library -->
+        <!-- ============================================== -->
+        <mxCell id="mod_docs_boundary" value="Document Library Module" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#d79b00;dashed=1;verticalAlign=top;fontStyle=1;fontSize=14;fontColor=#d79b00" vertex="1" parent="1">
+          <mxGeometry x="260" y="520" width="350" height="260" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ctrl_docs" value="DocumentsController&#xa;&#xa;GET /folders (Tree structure)&#xa;POST /folders&#xa;GET /folders/:id/files&#xa;POST /files/upload (multipart)&#xa;GET /files/:id/download (Streams)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="280" y="560" width="310" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc_docs" value="DocumentService&#xa;- File Validation (Type/Size)&#xa;- Folder Hierarchy logic (parent_id)&#xa;- Folder-level Permission checks" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="280" y="700" width="310" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge_docs" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="ctrl_docs" target="svc_docs">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================== -->
+        <!-- MODULE 5: Forum & Moderation -->
+        <!-- ============================================== -->
+        <mxCell id="mod_forum_boundary" value="Forum &amp; Moderation Module" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#9673a6;dashed=1;verticalAlign=top;fontStyle=1;fontSize=14;fontColor=#9673a6" vertex="1" parent="1">
+          <mxGeometry x="630" y="520" width="370" height="340" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ctrl_forum" value="ForumController&#xa;&#xa;GET /forums&#xa;GET /forums/:id/topics&#xa;POST /forums/:id/topics&#xa;GET /topics/:id/posts (Replies)&#xa;POST /topics/:id/posts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="650" y="560" width="330" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ctrl_mod" value="ModerationController (Mod/Admin)&#xa;&#xa;GET /moderation/queue&#xa;PATCH /posts/:id/approve&#xa;PATCH /posts/:id/reject" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="650" y="690" width="330" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc_forum" value="ForumService&#xa;- Nested Replies Logic&#xa;- Moderation Status updates" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="650" y="790" width="330" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge_forum1" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="ctrl_forum" target="svc_forum">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_forum2" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="ctrl_mod" target="svc_forum">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================== -->
+        <!-- SYSTEM & INFRASTRUCTURE -->
+        <!-- ============================================== -->
+        <mxCell id="sys_settings" value="SystemSettings Module (Admin)&#xa;GET/PATCH /settings" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="520" width="350" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="prisma_layer" value="Prisma ORM (Data Access Layer)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="260" y="900" width="1110" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Services to Prisma edges -->
+        <mxCell id="edge_p1" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.1;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="svc_auth" target="prisma_layer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_p2" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.45;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="svc_user" target="prisma_layer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_p3" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.9;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="svc_content" target="prisma_layer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_p4" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.15;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="svc_docs" target="prisma_layer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge_p5" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.55;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="svc_forum" target="prisma_layer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- EXTERNAL SERVICES -->
+        <mxCell id="ext_db" value="PostgreSQL Database&#xa;(Relational Data)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="720" y="1020" width="190" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ext_cloud" value="Cloudinary&#xa;(Media/File Storage)" style="shape=cloud;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="1100" y="650" width="190" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- Prisma to DB -->
+        <mxCell id="edge_db" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;strokeWidth=2" edge="1" parent="1" source="prisma_layer" target="ext_db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Services to Cloudinary -->
+        <mxCell id="edge_cloud1" value="Upload/Read&#xa;Files" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;dashed=1;" edge="1" parent="1" source="svc_content" target="ext_cloud">
+          <mxGeometry x="-0.4074" y="20" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge_cloud2" value="Upload/Read&#xa;Docs" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.16;entryY=0.55;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;" edge="1" parent="1" source="svc_docs" target="ext_cloud">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
